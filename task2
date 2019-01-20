@@ -1,0 +1,15 @@
+/* 2. Using Spark, load customers from /user/cloudera/practspark/input/retail_db/customers. 
+	Concat its columns (state, city, street, each column delimited with ";") as a new column called 'address'.
+	Concat its columns (fname, lname, columns delimited with " ") as a new column called 'name'. 
+	Save the resulting table (expected result: id, name, email, password, address, zipcode)
+	as parquet file with any compression to /user/cloudera/practspark/uno/task5/customers on HDFS.
+*/
+
+var customers = sc.textFile("/user/cloudera/practspark/input/retail_db/customers")
+
+var customerDF = customers.map(rec => {
+	var row = rec.split(',')
+    (row(0).toInt, row(1) + " " + row(2), row(3), row(4), row(7) + "; " + row(6) + "; " + row(5), row(8))
+}).toDF("id", "name", "email", "password", "address", "zipcode")
+
+customerDF.write.parquet("/user/cloudera/practspark/uno/task5/customers")

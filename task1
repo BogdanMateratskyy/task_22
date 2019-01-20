@@ -1,0 +1,15 @@
+/* 1. Using Spark, load contents of /user/cloudera/practspark/input/retail_db/customers/. 
+	Find only those customers who live in CA state and save 
+	the subset to /user/cloudera/practspark/uno/task3/california as avro with snappy compression.
+*/
+
+var customers = sc.textFile("/user/cloudera/practspark/input/retail_db/customers")
+
+var customersDF =  customers.map(rec => {
+    var row = rec.split(',')
+    (row(0).toInt, row(1) + " " + row(2), row(5), row(6), row(7))
+}).toDF("customer_id", "customer_name", "customer_street", "customer_city", "customer_state")
+
+var customersCA = customersDF.filter(customersDF("customer_state") === "CA")
+
+customersCA.write.format("com.databricks.spark.avro").save("/user/cloudera/practspark/uno/task3/california")
